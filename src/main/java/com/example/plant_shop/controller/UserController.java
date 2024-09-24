@@ -1,5 +1,6 @@
 package com.example.plant_shop.controller;
 
+import com.example.plant_shop.entity.User;
 import com.example.plant_shop.utill.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,8 +29,8 @@ public class UserController {
         return "Welcome this endpoint is not secure";
     }
     @PostMapping("/addNewUser")
-    public String addNewUser(@RequestBody UserInfo userInfo) {
-        return service.addUser(userInfo);
+    public String addNewUser(@RequestBody User user) {
+        return service.addUser(user);
     }
 
     @GetMapping("/user/userProfile")
