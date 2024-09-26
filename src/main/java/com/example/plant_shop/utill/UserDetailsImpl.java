@@ -24,7 +24,7 @@ public class UserDetailsImpl implements UserDetails {
     public UserDetails(User user) {
         this.email = user.getEmail(); // Assuming 'name' is used as 'username'
         this.password = user.getPassword();
-        this.authorities = List.of(user.getRoles().split(",")) ???
+        this.authorities = List.of(user.getRoles().split(",")) 
                 .stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
