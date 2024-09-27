@@ -1,13 +1,14 @@
 package com.example.plant_shop.controller;
 
-import com.example.plant_shop.entity.User;
-import com.example.plant_shop.utill.UserDetailsImpl;
+import com.example.plant_shop.entity.AuthRequest;
+import com.example.plant_shop.entity.UserInfo;
+import com.example.plant_shop.services.JwtService;
+import com.example.plant_shop.services.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @Autowired
-    private UserDetails userDetails;
+    private UserInfoService service;
 
     @Autowired
     private JwtService jwtService;
@@ -28,9 +29,10 @@ public class UserController {
     public String welcome() {
         return "Welcome this endpoint is not secure";
     }
+
     @PostMapping("/addNewUser")
-    public String addNewUser(@RequestBody User user) {
-        return service.addUser(user);
+    public String addNewUser(@RequestBody UserInfo userInfo) {
+        return service.addUser(userInfo);
     }
 
     @GetMapping("/user/userProfile")

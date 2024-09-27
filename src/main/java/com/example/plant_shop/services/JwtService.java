@@ -1,13 +1,10 @@
 package com.example.plant_shop.services;
 
-import com.example.plant_shop.utill.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +17,11 @@ import java.util.function.Function;
 @Component
 public class JwtService {
 
-    @Value("${plant_shop.app.secret}")
-    private static  String SECRET;
+    // Replace this with a secure key in a real application, ideally fetched from environment variables
+    public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
-    public String generateToken(String userName){
+    // Generate token with given user name
+    public String generateToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userName);
     }
@@ -80,5 +78,4 @@ public class JwtService {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
 }

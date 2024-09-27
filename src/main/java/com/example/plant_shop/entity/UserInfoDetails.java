@@ -1,8 +1,5 @@
-package com.example.plant_shop.utill;
+package com.example.plant_shop.entity;
 
-import com.example.plant_shop.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,20 +8,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
-@AllArgsConstructor
-public class UserDetailsImpl implements UserDetails {
-    private  Long id;
-    private String name;
-    private String email;
-    private String password;
+public class UserInfoDetails implements UserDetails {
 
+    private String username; // Changed from 'name' to 'username' for clarity
+    private String password;
     private List<GrantedAuthority> authorities;
 
-    public UserDetails(User user) {
-        this.email = user.getEmail(); // Assuming 'name' is used as 'username'
-        this.password = user.getPassword();
-        this.authorities = List.of(user.getRoles().split(",")) 
+    public UserInfoDetails(UserInfo userInfo) {
+        this.username = userInfo.getUsername(); // Assuming 'name' is used as 'username'
+        this.password = userInfo.getPassword();
+        this.authorities = List.of(userInfo.getRoles().split(","))
                 .stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
@@ -41,8 +34,8 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
     @Override
