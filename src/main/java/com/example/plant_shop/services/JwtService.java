@@ -18,7 +18,7 @@ import java.util.function.Function;
 public class JwtService {
 
     // Replace this with a secure key in a real application, ideally fetched from environment variables
-    public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+    public static final String SECRET = "PxjRozp1B2-NmVi2183qEx5dVZ5cXUjvVsQLvn2P2s";
 
     // Generate token with given user name
     public String generateToken(String userName) {
