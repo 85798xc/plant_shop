@@ -37,10 +37,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         System.out.println("JwtAuthFilter: Filter triggered for " + request.getRequestURI());
-        String authorizationHeader = request.getHeader("Authorization");
+        String authorizationHeader = request.getHeader("Authorization: ");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7);
+            String token = authorizationHeader.substring(6);
+            System.out.println("not null authorizacion header!!!");
             try {
                 String username = jwtService.extractUsername(token);
                 // You can add further checks for token validity here

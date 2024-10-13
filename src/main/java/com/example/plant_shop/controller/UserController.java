@@ -53,14 +53,13 @@ public class UserController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
             );
-            System.out.println( authRequest.getPassword());
             if (authentication.isAuthenticated()) {
                 return jwtService.generateToken(authRequest.getUsername());
             } else {
                 return "Authentication failed!";
             }
         } catch (Exception e) {
-            throw new RuntimeException("Invalid user credentials!");
+            throw new RuntimeException("Invalid user credentials!", e);
         }
     }
 }
