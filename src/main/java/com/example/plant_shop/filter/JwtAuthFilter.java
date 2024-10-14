@@ -37,28 +37,45 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         System.out.println("JwtAuthFilter: Filter triggered for " + request.getRequestURI());
-        String authorizationHeader = request.getHeader("Authorization: ");
+
+        String authorizationHeader = request.getHeader("Authorization");
+        System.out.println("Authorization Header: " + authorizationHeader);
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(6);
-            System.out.println("not null authorizacion header!!!");
+            String token = authorizationHeader.substring(7);
+            System.out.println("Token: " + token);
+
             try {
                 String username = jwtService.extractUsername(token);
-                // You can add further checks for token validity here
+                System.out.println("Extracted Username: " + username);
 
-                // Load user details and set security context if valid
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    // Load user details and set authentication in context
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    System.out.println("UserDetails: " + userDetails);
+
+                    if (jwtService.validateToken(token, userDetails)) {
+                        UsernamePasswordAuthenticationToken authToken =
+                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                        System.out.println("Authentication set in context: " + authToken);
+                    } else {
+                        System.out.println("Token validation failed");
+                    }
                 }
             } catch (ExpiredJwtException e) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.getWriter().write("Token expired!");
+                System.out.println("Token expired exception: " + e.getMessage());
                 return;
             } catch (Exception e) {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.getWriter().write("Invalid token!");
+                System.out.println("Invalid token exception: " + e.getMessage());
                 return;
             }
+        } else {
+            System.out.println("Authorization header missing or does not start with 'Bearer '");
         }
 
         filterChain.doFilter(request, response);

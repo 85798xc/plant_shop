@@ -2,7 +2,6 @@ package com.example.plant_shop.config;
 
 import com.example.plant_shop.filter.JwtAuthFilter;
 import com.example.plant_shop.services.UserInfoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
