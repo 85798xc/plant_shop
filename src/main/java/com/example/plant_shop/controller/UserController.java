@@ -1,10 +1,6 @@
 package com.example.plant_shop.controller;
 
-import com.example.plant_shop.entity.AuthRequest;
-import com.example.plant_shop.entity.UserInfo;
-import com.example.plant_shop.services.JwtService;
-import com.example.plant_shop.services.UserInfoService;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.example.plant_shop.model.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,24 +21,22 @@ public class UserController {
         this.authenticationManager = authenticationManager;
     }
 
-    @GetMapping("/welcome")
+    @GetMapping("/main")
     public String welcome() {
-        return "Welcome this endpoint is not secure";
+        return "Welcome to the main page";
     }
 
     @PostMapping("/addNewUser")
-    public String addNewUser(@RequestBody UserInfo userInfo) {
-        return service.addUser(userInfo);
+    public String addNewUser(@RequestBody User user) {
+        return service.addUser(user);
     }
 
     @GetMapping("/user/userProfile")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
     public String userProfile() {
         return "Welcome to User Profile";
     }
 
     @GetMapping("/admin/adminProfile")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String adminProfile() {
         return "Welcome to Admin Profile";
     }
