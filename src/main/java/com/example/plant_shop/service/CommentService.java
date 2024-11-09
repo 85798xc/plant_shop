@@ -1,5 +1,7 @@
 package com.example.plant_shop.service;
 
+import com.example.plant_shop.dto.CommentDTO;
+import com.example.plant_shop.exception.customException.CommentException;
 import com.example.plant_shop.model.Comment;
 import com.example.plant_shop.model.User;
 import com.example.plant_shop.repository.CommentRepo;
@@ -21,7 +23,7 @@ import java.util.Date;
 public class CommentService {
 
     private final CommentRepo commentRepo;
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
     private final NewsService newsService;
 
     public Page<Comment> getComments(Long newsId, Pageable pageable) {
@@ -34,7 +36,7 @@ public class CommentService {
     }
 
     public Comment createComment(String authorName, Long newsId, CommentDTO commentDTO) {
-        User author = (User) userService.loadUserByUsername(authorName);
+        User author = (User) userServiceImpl.loadUserByUsername(authorName);
         Comment newComment = new Comment(
                 new Date(),
                 commentDTO.getText(),

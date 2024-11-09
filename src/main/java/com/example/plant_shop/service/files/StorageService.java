@@ -1,5 +1,7 @@
 package com.example.plant_shop.service.files;
 
+import com.example.plant_shop.exception.customException.FileFormatException;
+import com.example.plant_shop.exception.customException.FileStorageException;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

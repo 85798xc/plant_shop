@@ -1,59 +1,96 @@
 package com.example.plant_shop.controller;
 
+import com.example.plant_shop.dto.UserUpdateRequest;
 import com.example.plant_shop.model.User;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import com.example.plant_shop.service.UserServiceImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+import java.util.List;
+
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/user")
+@RequiredArgsConstructor
+//"Контроллер для работы с пользователями")
 public class UserController {
 
-    private final UserInfoService service;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    private final UserServiceImpl userServiceImpl;
 
-    // Constructor-based injection
-    public UserController(UserInfoService service, JwtService jwtService, AuthenticationManager authenticationManager) {
-        this.service = service;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
+    //"Получение списка всех пользователей"
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getUsers(
+            @RequestParam(value = "sort", required = false, defaultValue = "id") String sort,
+            @RequestParam(value = "order", required = false, defaultValue = "DESC") String order,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(order), sort));
+        return ResponseEntity.ok().body(userServiceImpl.getUsers(pageable).getContent());
     }
 
-    @GetMapping("/main")
-    public String welcome() {
-        return "Welcome to the main page";
+    //"Получение пользователя по его id"
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable("id") long id) {
+        return ResponseEntity.ok().body(userServiceImpl.findUserById(id));
     }
 
-    @PostMapping("/addNewUser")
-    public String addNewUser(@RequestBody User user) {
-        return service.addUser(user);
+    //"Поиск пользователя по email"
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> searchUserByText(
+            @RequestParam("text") String email,
+            @RequestParam(value = "sort", required = false, defaultValue = "id") String sort,
+            @RequestParam(value = "order", required = false, defaultValue = "DESC") String order,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(order), sort));
+        return ResponseEntity.ok().body(userServiceImpl.searchUserByText(email, pageable).getContent());
     }
 
-    @GetMapping("/user/userProfile")
-    public String userProfile() {
-        return "Welcome to User Profile";
+    //"Обновление текущего пользователя"
+    @PutMapping("/update")
+    @Transactional
+    public ResponseEntity<?> updateCurrentUser(@RequestBody UserUpdateRequest request, Principal principal) {
+        String username = principal.getName();
+        User user = userServiceImpl.updateUser(username, request);
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok().body(user);
     }
 
-    @GetMapping("/admin/adminProfile")
-    public String adminProfile() {
-        return "Welcome to Admin Profile";
+    //"Удаление текущего пользователя"
+    @DeleteMapping("/delete")
+    @Transactional
+    public ResponseEntity<?> deleteUser(Principal principal) {
+        String username = principal.getName();
+        userServiceImpl.deleteUser(username);
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok().body("Пользльзователь " + principal.getName() + " удалён.");
     }
 
-    @PostMapping("/generateToken")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
-            );
-            if (authentication.isAuthenticated()) {
-                return jwtService.generateToken(authRequest.getUsername());
-            } else {
-                return "Authentication failed!";
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid user credentials!", e);
-        }
+    //"Обновление пользователя по username"
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{username}")
+    public ResponseEntity<?> updateUser(@PathVariable("username") String username,
+                                        @RequestBody UserUpdateRequest request) {
+        return ResponseEntity.ok().body(userServiceImpl.updateUser(username, request));
     }
+
+    //"Удаление пользователя по username"
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{username}")
+    public ResponseEntity<?> deleteUser(@PathVariable("username") String username) {
+        userServiceImpl.deleteUser(username);
+        return ResponseEntity.ok().body("Пользователь " + username + " удалён.");
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.example.plant_shop.model;
 
+import com.example.plant_shop.dto.UserDataRequest;
+import com.example.plant_shop.model.role.Role;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Getter;
